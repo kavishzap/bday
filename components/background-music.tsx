@@ -101,7 +101,7 @@ export function BackgroundMusic() {
   return (
     <audio
       ref={audioRef}
-      src="/30 seconds of lyricUntil I Found YouStephen Sanchez #music #song #lyrics #untilifoundyou #shorts (1).mp3"
+      src="/song.mp3"
       preload="auto"
       loop={false}
       crossOrigin="anonymous"
