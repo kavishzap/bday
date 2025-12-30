@@ -68,11 +68,11 @@ export function MemoryGallery() {
     setCurrentIndex((prev) => (prev === memories.length - 1 ? 0 : prev + 1))
   }
 
-  // Auto-advance carousel every 4 seconds
+  // Auto-advance carousel every 6 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev === memories.length - 1 ? 0 : prev + 1))
-    }, 4000)
+    }, 6000)
 
     return () => clearInterval(interval)
   }, [memories.length])

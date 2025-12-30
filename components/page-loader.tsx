@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 const imageFiles = [
   "WhatsApp Image 2025-12-30 at 21.22.37.jpeg",
@@ -53,29 +54,64 @@ function preloadImages(
 export function PageLoader({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [progress, setProgress] = useState(0)
+  const [hearts, setHearts] = useState<Array<{ id: number; x: number; delay: number; duration: number }>>([])
+
+  useEffect(() => {
+    // Generate hearts for loader
+    const generateHearts = () => {
+      const newHearts = Array.from({ length: 10 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        delay: Math.random() * 3,
+        duration: 8 + Math.random() * 6,
+      }))
+      setHearts(newHearts)
+    }
+    generateHearts()
+  }, [])
 
   useEffect(() => {
     const loadAssets = async () => {
       // Simulate minimum loading time for smooth UX
-      const minLoadTime = 1500
+      const minLoadTime = 2000
       const startTime = Date.now()
 
-      // Preload all images with progress tracking
-      await preloadImages(imageFiles, (imgProgress) => {
-        setProgress(Math.min(imgProgress, 90)) // Cap at 90% until all loaded
+      // Start progress immediately
+      setProgress(10)
+
+      // Simulate progress animation
+      const progressSteps = [20, 35, 50, 65, 80, 90]
+      let stepIndex = 0
+      
+      const progressInterval = setInterval(() => {
+        if (stepIndex < progressSteps.length) {
+          setProgress(progressSteps[stepIndex])
+          stepIndex++
+        }
+      }, 300)
+
+      // Preload all images (don't wait for them to block)
+      preloadImages(imageFiles, (imgProgress) => {
+        // Update progress based on image loading
+        const imageBasedProgress = 30 + (imgProgress * 0.5)
+        setProgress((prev) => Math.max(prev, imageBasedProgress))
+      }).catch(() => {
+        // Ignore errors, continue loading
       })
 
-      // Calculate remaining time
+      // Wait for minimum load time
       const elapsed = Date.now() - startTime
       const remaining = Math.max(0, minLoadTime - elapsed)
+      await new Promise((resolve) => setTimeout(resolve, remaining))
 
-      // Update progress to 100%
+      // Clear progress interval
+      clearInterval(progressInterval)
+
+      // Animate to 100%
       setProgress(100)
 
-      // Wait for minimum load time if needed
-      if (remaining > 0) {
-        await new Promise((resolve) => setTimeout(resolve, remaining))
-      }
+      // Wait a moment then hide loader
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
       setIsLoading(false)
     }
@@ -91,22 +127,52 @@ export function PageLoader({ children }: { children: React.ReactNode }) {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-background"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background overflow-hidden"
           >
-            <div className="text-center space-y-8">
+            {/* Floating hearts */}
+            {hearts.map((heart) => (
               <motion.div
+                key={heart.id}
+                className="absolute text-5xl md:text-6xl opacity-40 pointer-events-none"
+                style={{ 
+                  left: `${heart.x}%`, 
+                  bottom: "-60px",
+                }}
                 animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 180, 360],
+                  y: [0, -1200],
+                  x: [0, Math.sin(heart.id) * 100],
+                  rotate: [0, 360],
                 }}
                 transition={{
-                  duration: 2,
+                  duration: heart.duration,
+                  delay: heart.delay,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "linear",
+                }}
+              >
+                💖
+              </motion.div>
+            ))}
+            <div className="text-center space-y-8 relative z-10">
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
                   repeat: Number.POSITIVE_INFINITY,
                   ease: "easeInOut",
                 }}
-                className="text-7xl"
+                className="relative w-48 h-48 md:w-64 md:h-64 mx-auto"
               >
-                💖
+                <Image
+                  src="/ChatGPT_Image_Dec_30__2025__10_40_57_PM-removebg-preview (1).png"
+                  alt="Loading"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </motion.div>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-foreground">

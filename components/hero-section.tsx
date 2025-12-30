@@ -43,10 +43,10 @@ export function HeroSection() {
 
   // Corner positions and animations
   const corners = [
-    { position: "top-4 left-4 lg:top-32 lg:left-32 xl:top-40 xl:left-40", rotation: -12, delay: 0.2 },
-    { position: "top-4 right-4 lg:top-32 lg:right-32 xl:top-40 xl:right-40", rotation: 12, delay: 0.4 },
-    { position: "bottom-4 left-4 lg:bottom-32 lg:left-32 xl:bottom-40 xl:left-40", rotation: 8, delay: 0.6 },
-    { position: "bottom-4 right-4 lg:bottom-32 lg:right-32 xl:bottom-40 xl:right-40", rotation: -8, delay: 0.8 },
+    { position: "top-12 left-4 lg:top-32 lg:left-32 xl:top-40 xl:left-40", rotation: -12, delay: 0.2 },
+    { position: "top-12 right-4 lg:top-32 lg:right-32 xl:top-40 xl:right-40", rotation: 12, delay: 0.4 },
+    { position: "bottom-12 left-4 lg:bottom-32 lg:left-32 xl:bottom-40 xl:left-40", rotation: 8, delay: 0.6 },
+    { position: "bottom-12 right-4 lg:bottom-32 lg:right-32 xl:bottom-40 xl:right-40", rotation: -8, delay: 0.8 },
   ]
 
   return (
